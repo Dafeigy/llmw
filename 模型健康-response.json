@@ -1,0 +1,1601 @@
+{
+    "healthy_endpoints": [
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "qwen3.8-max",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c83a8642-829b-48a3-87b1-b6335c6fe66c"
+        },
+        {
+            "input_cost_per_token": 0.0000048,
+            "output_cost_per_token": 0.0000288,
+            "cache_read_input_token_cost": 4.8e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.6-flash",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "3ada137c-0e77-4836-8967-82c6ce8b5677"
+        },
+        {
+            "input_cost_per_token": 0.0000048,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 9.6e-7,
+            "custom_llm_provider": "volcengine",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "doubao-seed-2-0-pro-260215",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "6a74a9ad-db12-4dcc-89a2-9a6460a2fd0c"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "GLM-5.2",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "6cb0a876-c12b-4fe1-b68a-c4251f4e4ba4"
+        },
+        {
+            "input_cost_per_token": 0.000006,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 6e-7,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "glm-5.1",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "dc0274d3-3607-4cb4-9621-0fafbbcb1fc3"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.0000024,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.7-max",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "038df240-cbe3-44c7-9661-229bd5338b48"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "joyscale",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3-Next-80B-A3B",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c3278510-bf19-4828-bd59-0101e9c4f255"
+        },
+        {
+            "input_cost_per_token": 0.000003,
+            "output_cost_per_token": 0.000009,
+            "cache_read_input_token_cost": 3e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4-flash-0731",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "f38cf6c7-b20b-43f6-b5bd-69d0e565bcdc"
+        },
+        {
+            "input_cost_per_token": 0.000006,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 0.0000012,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "qwen3.7-plus",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "eae13d95-2649-4d54-89fb-c48d3785b6a0"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "joyscale",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen36-27B",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "8d23706f-e1a9-4c67-827d-ba534ccc7eac"
+        },
+        {
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "joyscale",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "HY-MT2-7B",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "a5596626-3be5-4946-8a28-26b385473960"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.0000015,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.8-max",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "9debb792-2c1b-4958-b69e-032454c00bf3"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "hosted_vllm",
+            "litellm_credential_name": "gpustack",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "bge-reranker-v2-m3",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "d7f14f56-e2bf-4952-9b49-81f40727187d"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "hosted_vllm",
+            "litellm_credential_name": "gpustack",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3-Reranker-8B",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "9c159348-0e1f-4fe6-bba0-be3e87720c90"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "gpustack",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "bge-m3-test",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c60bd318-d082-4294-908c-2e0284040b07"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "gpustack",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "bge-m3",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "daadd0e5-5db4-4c1f-bce6-dcda67a030ad"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4-pro-0813",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "bb09c560-a1e6-47bd-b61f-93f74d6ba8ed"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "qwen3.8-max",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "fddcb09a-cf04-4f14-9c8c-baafbe9b8358"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000048,
+            "cache_read_input_token_cost": 8e-7,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.6-plus",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "cf17a50f-3716-4f72-9bb8-03d926dc6097"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "Qwen3-235B-A22B-Instruct",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "ef5ed838-64eb-4868-9d33-4bf614d4ca5a"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.0000015,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.8-max",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "492932a1-33b4-428d-9f78-145b89cbbfbe"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3-VL-235B-A22B-Instruct",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "ad080c80-7c45-482a-be26-2f45e0cad9e6"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "glm-5.2",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "1a8bd56a-5bf4-49d8-b27d-a7720f73bbb7"
+        },
+        {
+            "input_cost_per_token": 0.000006,
+            "output_cost_per_token": 0.000022,
+            "cache_read_input_token_cost": 0.0000012,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "glm-5",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "643f9185-e364-4bd2-b9dd-1029667e6e8a"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.0000024,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "qwen3.7-max",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "2a37abe0-d5ce-46b0-a55b-8dd285aabc18"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "DeepSeek-V4-Pro-credential-c3f94144-72b0-490f-8d6c-a6b3749079a1",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "DeepSeek-V4-Pro",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "25ba3622-2713-48d1-ab6b-a7d455986e51"
+        },
+        {
+            "input_cost_per_token": 0.0000042,
+            "output_cost_per_token": 0.0000168,
+            "cache_read_input_token_cost": 8.4e-7,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "MiniMax/MiniMax-M3",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c46c5b47-71f6-4532-a9d1-f6f299186601"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3-Coder-30B-A3B-Instruct",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "0eacd9da-785c-4e24-aaf1-142709d9c60d"
+        },
+        {
+            "input_cost_per_token": 0.000006,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 0.0000012,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "qwen3.7-plus",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c9c69c7b-6a49-4a04-8160-d7442a9b6b9a"
+        },
+        {
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "joyscale",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "Qwen38-Flash-Next-FP8",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "3313ef62-c545-4df3-9cca-5646cd15c7e7"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "joyscale",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen36-27B-262K",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "5390e242-b1bd-4d3d-b8ed-0ab494a48fc9"
+        },
+        {
+            "input_cost_per_token": 0.000003,
+            "output_cost_per_token": 0.000009,
+            "cache_read_input_token_cost": 3e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4-flash-0731",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "a1d3d17b-329c-466c-9614-df23368188f0"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "gpustack",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3-Embedding-8B",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "9b878572-b488-45c3-ad6e-e6014ecead65"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "dashscope",
+            "tpm": 2000000,
+            "rpm": 500,
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "glm-5.2",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "3d7af1a5-ef6d-420c-a7b0-9bbd8862b796"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "Qwen3-32B-FP8",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "ea04b852-7480-477e-9324-10df7ae84f31"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "azure_ai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-ocr",
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "3b208af0-240a-46c9-a578-5f5ad7842363"
+        },
+        {
+            "input_cost_per_token": 0.000001,
+            "output_cost_per_token": 0.000004,
+            "cache_read_input_token_cost": 1.0000000000000001e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4.1-flash",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "64946b8f-17c6-41fa-ac24-d4ba797871a3"
+        },
+        {
+            "input_cost_per_token": 0.000003,
+            "output_cost_per_token": 0.000009,
+            "cache_read_input_token_cost": 3e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "deepseek-v4-flash-0731",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "bc97b570-452e-4c11-9281-062e571430ac"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "ceec-GLM-5.2-credential",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "GLM-5.2",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "798ef5aa-ac89-4664-a90b-779ba3a6a753"
+        },
+        {
+            "input_cost_per_token": 0.000006,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 6e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.7-plus",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "181255a5-2c3b-41c0-bb81-09553fbb93fe"
+        },
+        {
+            "input_cost_per_token": 0.0000065,
+            "output_cost_per_token": 0.000027,
+            "cache_read_input_token_cost": 6.5e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "kimi-k2.7-code",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "38cf48c3-059c-487e-910f-d3d00158076b"
+        },
+        {
+            "input_cost_per_token": 0.000001,
+            "output_cost_per_token": 0.000004,
+            "cache_read_input_token_cost": 1.0000000000000001e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4.1-flash",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "40d51813-81e0-427f-b98d-213bec69ea6d"
+        },
+        {
+            "input_cost_per_token": 0.000004,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 4e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.5-plus",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "464ab821-6265-4c3b-ab4e-425a5c26bcc2"
+        },
+        {
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "General DashScope",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4-pro",
+            "stream": true,
+            "extra_body": {
+                "enable_search": true,
+                "search_options": {
+                    "search_strategy": "turbo"
+                },
+                "enable_thinking": true
+            },
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c6b043cb-359c-48b6-9ee5-50cfea0fadb0"
+        },
+        {
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "General DashScope",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.6-plus",
+            "stream": true,
+            "extra_body": {
+                "enable_search": true,
+                "search_options": {
+                    "search_strategy": "agent_max"
+                },
+                "enable_thinking": true
+            },
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "b7d4dc4b-7518-403a-b3a0-6846e126d078"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3.6-35B-A3B",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "03d43da6-a43d-46f7-8722-059722680891"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3.5-397B-A17B",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "49867622-5287-45c6-9aea-a07b47c82b96"
+        },
+        {
+            "input_cost_per_token": 0.000001,
+            "output_cost_per_token": 0.000004,
+            "cache_read_input_token_cost": 1.0000000000000001e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4.1-flash",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "61ca27a4-0e76-417d-952b-a1fa436196a7"
+        },
+        {
+            "input_cost_per_token": 0.0000065,
+            "output_cost_per_token": 0.000027,
+            "cache_read_input_token_cost": 0.0000013,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "kimi-k2.6",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "aaa5808c-5429-4dbc-9e1b-65fbe80d58bd"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3.6-27B",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "68e8b7e6-9c42-405e-8844-34230d06ed43"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3.5-9B",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "9a38a123-f7a5-4d9e-b9d3-74ade8bbee38"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "deepseek-v4-pro-0813",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "de252f2d-c574-4a03-9e7d-caa590b127de"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "DeepSeek-V4-Pro",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c3f94144-72b0-490f-8d6c-a6b3749079a1"
+        },
+        {
+            "input_cost_per_token": 0.000004,
+            "output_cost_per_token": 0.000021,
+            "cache_read_input_token_cost": 4e-7,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "kimi-k2.5",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "1b81ca66-32d4-494b-be51-b6bdb3ef6a28"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "glm-5.2",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "5ced0a29-0f92-4681-a804-b89858eda34e"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "deepseek-v4-pro-0813",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "cf79bb73-210b-41d2-a5a8-0628c06fcb92"
+        },
+        {
+            "input_cost_per_token": 0.0000065,
+            "output_cost_per_token": 0.000027,
+            "cache_read_input_token_cost": 0.0000013,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "kimi-k2.6",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "19ecc82c-e903-45ad-b473-b3b427397742"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "Qwen3-Embedding-4B",
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "847d499f-7b18-4b1b-b346-76046cd96d4c"
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "Qwen3-Embedding-8B",
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "0797d037-8b64-4382-a2d2-e059cd7feb59"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "glm-5.2",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "441ceef1-0dce-400c-b15e-f1ba4f99f863"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "ZHIPU/GLM-5.2",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "e8985dce-b7e7-431f-919f-2a8e3e33dd7e"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.8-max",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "ae04d851-13f1-4fb7-bc4b-3e6050b70c4d"
+        },
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "joyscale",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen36-35B-A3B",
+            "extra_body": {
+                "chat_template_kwargs": {
+                    "enable_thinking": false
+                },
+                "enable_thinking": false
+            },
+            "guardrails": [],
+            "enable_thinking": false,
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "1943e22b-affa-4db8-9ae3-add4a8f93f23"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.0000024,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.7-max",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "96632aa6-f0d2-4995-aa9b-d93c6a290360"
+        },
+        {
+            "input_cost_per_token": 0.000007,
+            "output_cost_per_token": 0.000021,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "xiaomi/mimo-v2.5-pro",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "71dda70d-cce8-4a04-beb3-15fad4b6d439"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000036,
+            "cache_read_input_token_cost": 0.0000024,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "qwen3.7-max",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "ac401c30-5ad6-4343-89a9-ca78873b3b55"
+        },
+        {
+            "input_cost_per_token": 8e-7,
+            "output_cost_per_token": 0.0000027,
+            "cache_read_input_token_cost": 1e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "qwen3.8-flash",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "a8d1938a-a452-4b2d-b403-4cf5296ed81c"
+        },
+        {
+            "input_cost_per_token": 9e-7,
+            "output_cost_per_token": 0.0000054,
+            "cache_read_input_token_cost": 1.8e-7,
+            "custom_llm_provider": "volcengine",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "ep-20260922085936-bgj62",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "a5849c91-0181-4e12-b5aa-3ba9666195e5"
+        },
+        {
+            "input_cost_per_token": 0.000012,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "deepseek-v4-pro-0813",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "cbb30722-cfac-4d27-844a-50ea4251abf8"
+        },
+        {
+            "input_cost_per_token": 0.0000065,
+            "output_cost_per_token": 0.000027,
+            "cache_read_input_token_cost": 0.0000013,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "kimi/kimi-k2.6",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "153117d3-c26a-43a2-9fc9-0d11db2bc119"
+        },
+        {
+            "input_cost_per_token": 0.000006,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 6e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "glm-5.1",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "85b15f24-e18c-41e5-bb0a-3a6dc71c5a0d"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "glm-5.3",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "1a09dafb-b4c6-4741-b2a7-dd61b37bcfb2"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan02",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "glm-5.3",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "c3fd7116-362a-4a0d-9475-1445c8fc1683"
+        },
+        {
+            "input_cost_per_token": 0.000003,
+            "output_cost_per_token": 0.000009,
+            "cache_read_input_token_cost": 3e-7,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "deepseek-v4.1-flash",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "aed3bf7d-afc6-41af-9e09-354e642b251c"
+        },
+        {
+            "input_cost_per_token": 0.00001,
+            "output_cost_per_token": 0.00002,
+            "cache_read_input_token_cost": 0.000001,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "auto",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "63f4bfdc-4ba0-4e64-8117-cf974ddceddb"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000001999997,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan03",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "glm-5.3",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "669390aa-d843-4f3b-996e-8e44823d657e"
+        },
+        {
+            "input_cost_per_token": 0.000003,
+            "output_cost_per_token": 0.000009,
+            "cache_read_input_token_cost": 3e-7,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "vvip01",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "deepseek-v4.1-flash",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "ee00fc6b-5f9d-4f09-9b9f-e3c4918fd0e6"
+        },
+        {
+            "input_cost_per_token": 0.00001,
+            "output_cost_per_token": 0.00002,
+            "cache_read_input_token_cost": 0.00001,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "dashscope",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "auto",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "63683de1-d1ae-4e32-aea0-3496820f08ef"
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "cache_read_input_token_cost": 0.000002,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "tokenplan",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "model": "glm-5.3",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "model_id": "0aa38031-db42-4aa8-8621-5d92e4aa8562"
+        }
+    ],
+    "unhealthy_endpoints": [
+        {
+            "input_cost_per_token": 0,
+            "output_cost_per_token": 0,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen2.5-72B-Instruct",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "error": "litellm.ServiceUnavailableError: ServiceUnavailableError: OpenAIException - <html>\r\n<head><title>503 Service Temporarily Unavailable</title></head>\r\n<body>\r\n<center><h1>503 Service Temporarily Unavailable</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\nstack trace: Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 930, in acompletion\n    headers, response = await self.make_openai_chat_completion_request(\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n    )\n    ^\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/logging_utils.py\", line 297, in async_wrapper\n    result = await func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 461, in make_openai_chat_completion_request\n    raise e\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 438, in make_openai_chat_completion_request\n    await openai_aclient.chat.completions.with_raw_response.create(\n        **data, timeout=timeout\n    )\n  File \"/app/.venv/lib/python3.13/site-packages/openai/_legacy_response.py\", line 384, in wrapped\n    ret",
+            "raw_request_typed_dict": {
+                "raw_request_api_base": "[REDACTED]",
+                "raw_request_body": {
+                    "model": "Qwen2.5-72B-Instruct",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "Hey how's it going?"
+                        }
+                    ],
+                    "max_tokens": 5,
+                    "extra_body": {
+                        "vector_store_ids": []
+                    }
+                },
+                "raw_request_headers": {
+                    "Authorization": "Be****DA"
+                },
+                "error": null
+            },
+            "model_id": "064b1a4f-65f7-4301-b557-56d0c5f5c9fb",
+            "exception_status": 503
+        },
+        {
+            "input_cost_per_token": 0.000008,
+            "output_cost_per_token": 0.000028,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "sciit",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "glm-5.2",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "error": "litellm.InternalServerError: InternalServerError: OpenAIException - Connection error.\nstack trace: Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/aiohttp/connector.py\", line 1310, in _wrap_create_connection\n    sock = await aiohappyeyeballs.start_connection(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n    )\n    ^\n  File \"/app/.venv/lib/python3.13/site-packages/aiohappyeyeballs/impl.py\", line 122, in start_connection\n    raise first_exception\n  File \"/app/.venv/lib/python3.13/site-packages/aiohappyeyeballs/impl.py\", line 73, in start_connection\n    sock = await _connect_sock(\n           ^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n    )\n    ^\n  File \"/app/.venv/lib/python3.13/site-packages/aiohappyeyeballs/impl.py\", line 208, in _connect_sock\n    await loop.sock_connect(sock, address)\n  File \"uvloop/loop.pyx\", line 2633, in sock_connect\n    await fut\n  File \"uvloop/loop.pyx\", line 1108, in uvloop.loop.Loop._sock_connect_cb\n    raise OSError(err, 'Connect call failed %s' % (address,))\nConnectionRefusedError: [Errno 111] Conne",
+            "raw_request_typed_dict": {
+                "raw_request_api_base": "[REDACTED]",
+                "raw_request_body": {
+                    "model": "glm-5.2",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "What's 1 + 1?"
+                        }
+                    ],
+                    "max_tokens": 5,
+                    "extra_body": {}
+                },
+                "raw_request_headers": {
+                    "Authorization": "Be****Z4"
+                },
+                "error": null
+            },
+            "model_id": "f392c8fa-5859-4774-af06-db6685262b8d",
+            "exception_status": 500
+        },
+        {
+            "input_cost_per_token": 0.000013,
+            "output_cost_per_token": 0.000054,
+            "custom_llm_provider": "openai",
+            "litellm_credential_name": "sciit",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "kimi-k2.7-code-highspeed",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "error": "litellm.InternalServerError: InternalServerError: OpenAIException - Connection error.\nstack trace: Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/aiohttp/connector.py\", line 1310, in _wrap_create_connection\n    sock = await aiohappyeyeballs.start_connection(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n    )\n    ^\n  File \"/app/.venv/lib/python3.13/site-packages/aiohappyeyeballs/impl.py\", line 122, in start_connection\n    raise first_exception\n  File \"/app/.venv/lib/python3.13/site-packages/aiohappyeyeballs/impl.py\", line 73, in start_connection\n    sock = await _connect_sock(\n           ^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n    )\n    ^\n  File \"/app/.venv/lib/python3.13/site-packages/aiohappyeyeballs/impl.py\", line 208, in _connect_sock\n    await loop.sock_connect(sock, address)\n  File \"uvloop/loop.pyx\", line 2633, in sock_connect\n    await fut\n  File \"uvloop/loop.pyx\", line 1108, in uvloop.loop.Loop._sock_connect_cb\n    raise OSError(err, 'Connect call failed %s' % (address,))\nConnectionRefusedError: [Errno 111] Conne",
+            "raw_request_typed_dict": {
+                "raw_request_api_base": "[REDACTED]",
+                "raw_request_body": {
+                    "model": "kimi-k2.7-code-highspeed",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "Hey how's it going?"
+                        }
+                    ],
+                    "max_tokens": 5,
+                    "extra_body": {}
+                },
+                "raw_request_headers": {
+                    "Authorization": "Be****Z4"
+                },
+                "error": null
+            },
+            "model_id": "6a246e48-ab53-42bc-b1be-7c659eeb92c1",
+            "exception_status": 500
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3-VL-32B-Instruct",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "error": "litellm.InternalServerError: InternalServerError: OpenAIException - Invalid response object Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/llm_response_utils/convert_dict_to_response.py\", line 539, in convert_to_model_response_object\n    assert response_object[\"choices\"] is not None and isinstance(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        response_object[\"choices\"], Iterable\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\nAssertionError\n\n\nreceived_args={'response_object': {'id': None, 'choices': None, 'created': None, 'model': None, 'object': None, 'service_tier': None, 'system_fingerprint': None, 'usage': None, 'code': 502, 'msg': '上游服务不可用或连接失败，请稍后重试'}, 'model_response_object': ModelResponse(id='chatcmpl-a6e7bc73-bf74-4087-9328-e449b764a686', created=1791942991, model=None, object='chat.completion', system_fingerprint=None, choices=[Choices(finish_reason='stop', index=0, message=Message(content=None, role='assistant', tool_calls=None, function_call=None, provider_specific_fields=None))], usage=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None)), 'response_type': 'completion', 'stream': False, 'start_time': None, 'end_time': None, 'convert_tool_call_to_json_mode': None}\nstack trace: Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/llm_response_utils/convert_dict_to_response.py\", line 539, in convert_to_model_response_object\n    assert response_object[\"choices\"] is not None and isinstance(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        response_object[\"choices\"], Iterable\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\nAssertionError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 944, in acompletion\n    final_response_obj = convert_to_model_response_object(\n        response_object=stringified_response,\n    ...<2 lines>...\n        _response_headers=headers,\n    )\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/llm_response_utils/convert_dict_to_response.py\", line 829, in convert_to_model_response_object\n",
+            "raw_request_typed_dict": {
+                "raw_request_api_base": "[REDACTED]",
+                "raw_request_body": {
+                    "model": "Qwen3-VL-32B-Instruct",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "What's 1 + 1?"
+                        }
+                    ],
+                    "max_tokens": 5,
+                    "extra_body": {}
+                },
+                "raw_request_headers": {
+                    "Authorization": "Be****DA"
+                },
+                "error": null
+            },
+            "model_id": "0c6b099b-5b7a-4515-b983-6a65ede0120c",
+            "exception_status": 500
+        },
+        {
+            "input_cost_per_token": 0.000006,
+            "output_cost_per_token": 0.000024,
+            "cache_read_input_token_cost": 0.0000012,
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "openai",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "qwen3.7-plus",
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "error": "litellm.APIError: APIError: OpenAIException - Access to model denied. Please make sure you are eligible for using the model.\nstack trace: Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 930, in acompletion\n    headers, response = await self.make_openai_chat_completion_request(\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n    )\n    ^\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/logging_utils.py\", line 297, in async_wrapper\n    result = await func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 461, in make_openai_chat_completion_request\n    raise e\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 438, in make_openai_chat_completion_request\n    await openai_aclient.chat.completions.with_raw_response.create(\n        **data, timeout=timeout\n    )\n  File \"/app/.venv/lib/python3.13/site-packages/openai/_legacy_response.py\", line 384, in wrapped\n    ret",
+            "raw_request_typed_dict": {
+                "raw_request_api_base": "[REDACTED]",
+                "raw_request_body": {
+                    "model": "qwen3.7-plus",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "Hey how's it going?"
+                        }
+                    ],
+                    "max_tokens": 5,
+                    "extra_body": {}
+                },
+                "raw_request_headers": {
+                    "Authorization": "Be****cg"
+                },
+                "error": null
+            },
+            "model_id": "a709e664-0805-4b1c-9748-213c1e3b5451",
+            "exception_status": 403
+        },
+        {
+            "api_base": "[REDACTED]",
+            "custom_llm_provider": "hosted_vllm",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "Qwen3-Reranker-8B",
+            "guardrails": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "error": "litellm.BadRequestError: Hosted_vllmException - The model does not support Chat Completions API\nstack trace: Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/main.py\", line 637, in acompletion\n    response = await init_response\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/custom_httpx/llm_http_handler.py\", line 349, in async_completion\n    initial_response = provider_config.transform_response(\n        model=model,\n    ...<9 lines>...\n        json_mode=json_mode,\n    )\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/chat/gpt_transformation.py\", line 653, in transform_response\n    final_response_obj = convert_to_model_response_object(\n        response_object=completion_response,\n    ...<2 lines>...\n        _response_headers=raw_response_headers,\n    )\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/llm_response_utils/convert_dict_to_response.py\", line 525, in convert_to_model_response_object\n    raise raised_exception\nException\n\nDuring handling of the above",
+            "raw_request_typed_dict": {
+                "raw_request_api_base": "[REDACTED]",
+                "raw_request_body": {
+                    "model": "Qwen3-Reranker-8B",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "Hey how's it going?"
+                        }
+                    ],
+                    "max_tokens": 5
+                },
+                "raw_request_headers": {
+                    "Authorization": "Be****DA",
+                    "Content-Type": "application/json"
+                },
+                "error": null
+            },
+            "model_id": "350ed78e-42e8-4368-ab7c-0e4d97bbbecb",
+            "exception_status": 400
+        },
+        {
+            "input_cost_per_token": 0.000002,
+            "output_cost_per_token": 0.000003,
+            "cache_creation_input_token_cost": 0.0000025,
+            "cache_read_input_token_cost": 4e-7,
+            "custom_llm_provider": "dashscope",
+            "litellm_credential_name": "dashboard-new",
+            "use_in_pass_through": false,
+            "use_litellm_proxy": false,
+            "merge_reasoning_content_in_choices": false,
+            "tags": [],
+            "model": "deepseek-v3.2",
+            "guardrails": [],
+            "vector_store_ids": [],
+            "max_tokens": 5,
+            "cache": {
+                "no-cache": true
+            },
+            "error": "litellm.NotFoundError: DashscopeException - Model not exist.\nstack trace: Traceback (most recent call last):\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 930, in acompletion\n    headers, response = await self.make_openai_chat_completion_request(\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n    )\n    ^\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/logging_utils.py\", line 297, in async_wrapper\n    result = await func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 461, in make_openai_chat_completion_request\n    raise e\n  File \"/app/.venv/lib/python3.13/site-packages/litellm/llms/openai/openai.py\", line 438, in make_openai_chat_completion_request\n    await openai_aclient.chat.completions.with_raw_response.create(\n        **data, timeout=timeout\n    )\n  File \"/app/.venv/lib/python3.13/site-packages/openai/_legacy_response.py\", line 384, in wrapped\n    ret",
+            "raw_request_typed_dict": {
+                "raw_request_api_base": "[REDACTED]",
+                "raw_request_body": {
+                    "model": "deepseek-v3.2",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "What's 1 + 1?"
+                        }
+                    ],
+                    "max_tokens": 5,
+                    "extra_body": {
+                        "vector_store_ids": []
+                    }
+                },
+                "raw_request_headers": {
+                    "Authorization": "Be****_a"
+                },
+                "error": null
+            },
+            "model_id": "7381ab8c-6e18-4e0b-9da0-a58c2d2ca7c2",
+            "exception_status": 404
+        }
+    ],
+    "healthy_count": 79,
+    "unhealthy_count": 7
+}
