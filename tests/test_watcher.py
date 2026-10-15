@@ -2,11 +2,12 @@ import asyncio
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 import httpx
 
-from watcher import HealthWatcher, Settings, StateStore, parse_health_response
+from watcher import Gateway, HealthWatcher, Settings, StateStore, parse_health_response
 
 
 SAMPLE = Path(__file__).resolve().parents[1] / "模型健康-response.json"
@@ -101,6 +102,41 @@ class WatcherTests(unittest.TestCase):
             await watcher.client.aclose()
 
         asyncio.run(run())
+
+    def test_multiple_gateways_and_webhooks_are_supported(self):
+        environment = {
+            "LITELLM_BASE_URLS": "http://gateway-a,http://gateway-b",
+            "LITELLM_API_KEYS": "key-a,key-b",
+            "LITELLM_GATEWAY_NAMES": "生产,备用",
+            "WEBHOOK_URLS": "http://wecom-a,http://wecom-b",
+            "SQLITE_PATH": str(self.db_path),
+        }
+        with patch.dict("os.environ", environment, clear=True):
+            settings = Settings.from_env()
+        self.assertEqual([gateway.name for gateway in settings.gateways], ["生产", "备用"])
+        self.assertEqual(settings.webhook_urls, ("http://wecom-a", "http://wecom-b"))
+
+        multi_store = StateStore(self.db_path, webhook_count=2)
+        multi_store.record_failure("gateway-1", "生产", "请求超时")
+        watcher = HealthWatcher(settings, multi_store)
+        replies = iter([{"errcode": 0}, {"errcode": 40013}, {"errcode": 0}])
+        calls = []
+
+        def handle(request):
+            calls.append(str(request.url))
+            return httpx.Response(200, json=next(replies))
+
+        async def run():
+            await watcher.client.aclose()
+            watcher.client = httpx.AsyncClient(transport=httpx.MockTransport(handle))
+            await watcher.send_pending()
+            self.assertEqual(multi_store.summary()["pending_notifications"], 1)
+            await watcher.send_pending()
+            self.assertEqual(multi_store.summary()["pending_notifications"], 0)
+            await watcher.client.aclose()
+
+        asyncio.run(run())
+        self.assertEqual(calls, ["http://wecom-a", "http://wecom-b", "http://wecom-b"])
 
 
 if __name__ == "__main__":

@@ -1,23 +1,38 @@
 # LiteLLM 模型健康监控
 
-FastAPI 服务定时调用 LiteLLM `GET /health`，将部署状态保存到 SQLite，并通过企业微信群机器人 webhook 只推送状态变化。
+FastAPI 服务定时调用一个或多个 LiteLLM 网关的 `GET /health`，将部署状态保存到 SQLite，并通过一个或多个企业微信群机器人 webhook 只推送状态变化。
 
 ## 行为
 
 - 首次成功查询只建立基线，不发送模型告警；重启后从 SQLite 中的最新状态继续比较。
 - 按 `model_id` 区分同名模型的多个部署。推送新增异常、恢复、异常类型或 HTTP 状态变化，以及部署移除；没有变化时不发消息。
 - LiteLLM 查询失败时保留最后一次有效模型快照，只推送一次接口故障；恢复后推送恢复消息。
-- 企业微信发送失败时保留 SQLite 待发消息，每 30 秒重试。HTTP 成功且响应 `errcode == 0` 才算发送成功。
+- 企业微信发送失败时保留 SQLite 待发消息，每 30 秒重试。每个机器人独立记录投递状态，HTTP 成功且响应 `errcode == 0` 才算发送成功。
 - 群消息只包含模型名、提供方、凭据名称、短 ID、异常类型和状态码，不包含原始错误堆栈、请求头或 API 地址。
 
 ## 配置
 
-复制 `.env.example` 为 `.env`，填写 `LITELLM_BASE_URL`、`LITELLM_API_KEY` 和 `WEBHOOK_URL`。检查间隔由 `CHECK_INTERVAL_SECONDS` 控制，示例为 900 秒（15 分钟）。代码中没有默认密钥。
+复制 `.env.example` 为 `.env`，填写网关和机器人配置。多个值使用英文逗号分隔；`LITELLM_BASE_URLS` 与 `LITELLM_API_KEYS` 按位置配对，`LITELLM_GATEWAY_NAMES` 可选但必须与网关数量一致。检查间隔由 `CHECK_INTERVAL_SECONDS` 控制，示例为 900 秒（15 分钟）。代码中没有默认密钥。
+
+例如：
+
+```dotenv
+LITELLM_BASE_URLS=https://gateway-a.example.com,https://gateway-b.example.com
+LITELLM_API_KEYS=key-for-a,key-for-b
+LITELLM_GATEWAY_NAMES=生产网关,备用网关
+WEBHOOK_URLS=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=key-a,https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=key-b
+```
+
+为兼容已有部署，单值的 `LITELLM_BASE_URL`、`LITELLM_API_KEY`、`WEBHOOK_URL` 仍然支持；同一组配置不要同时填写单数和复数变量。网关 URL、API Key 数量必须一致。
 
 `.env.example` 的 `host.docker.internal` 适用于 LiteLLM 运行在同一台 Linux Docker 主机上；Compose 文件已配置 `host-gateway` 映射。如果 LiteLLM 在另一台机器，改成该机器可从容器访问的 URL。如果它与本服务处于同一个 Docker 网络，可以使用其服务名，例如 `http://litellm:4000`，并将两个容器接入同一网络。容器内的 `localhost` 只指向本容器。
 
 | 变量 | 默认值 | 作用 |
 | --- | --- | --- |
+| `LITELLM_BASE_URLS` | — | LiteLLM 网关 URL 列表，逗号分隔 |
+| `LITELLM_API_KEYS` | — | 与网关 URL 按位置对应的 API Key 列表 |
+| `LITELLM_GATEWAY_NAMES` | `网关 1,网关 2,...` | 网关展示名称列表，逗号分隔 |
+| `WEBHOOK_URLS` | — | 企业微信机器人 webhook 列表，逗号分隔 |
 | `CHECK_INTERVAL_SECONDS` | `900` | 两次检查之间的秒数 |
 | `LITELLM_TIMEOUT_SECONDS` | `120` | 单次 LiteLLM 请求超时 |
 | `WEBHOOK_TIMEOUT_SECONDS` | `10` | 企业微信请求超时 |

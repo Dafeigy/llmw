@@ -32,6 +32,19 @@ def positive_number(name: str, default: str) -> float:
     return value
 
 
+def env_list(name: str) -> tuple[str, ...]:
+    value = os.getenv(name, "")
+    return tuple(item.strip() for item in value.split(",") if item.strip())
+
+
+@dataclass(frozen=True)
+class Gateway:
+    gateway_id: str
+    name: str
+    base_url: str
+    api_key: str
+
+
 @dataclass(frozen=True)
 class Settings:
     base_url: str
@@ -41,21 +54,56 @@ class Settings:
     check_interval: float
     health_timeout: float
     webhook_timeout: float
+    gateways: tuple[Gateway, ...] = ()
+    webhook_urls: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        # Keep the old constructor usable for integrations and existing tests.
+        if not self.gateways:
+            object.__setattr__(
+                self,
+                "gateways",
+                (Gateway("gateway-1", "网关 1", self.base_url.rstrip("/"), self.api_key),),
+            )
+        if not self.webhook_urls:
+            object.__setattr__(self, "webhook_urls", (self.webhook_url,))
 
     @classmethod
     def from_env(cls) -> Settings:
-        required = ("LITELLM_BASE_URL", "LITELLM_API_KEY", "WEBHOOK_URL")
-        missing = [name for name in required if not os.getenv(name)]
+        base_urls = env_list("LITELLM_BASE_URLS") or env_list("LITELLM_BASE_URL")
+        api_keys = env_list("LITELLM_API_KEYS") or env_list("LITELLM_API_KEY")
+        webhook_urls = env_list("WEBHOOK_URLS") or env_list("WEBHOOK_URL")
+        names = env_list("LITELLM_GATEWAY_NAMES")
+        missing = []
+        if not base_urls:
+            missing.append("LITELLM_BASE_URLS (or LITELLM_BASE_URL)")
+        if not api_keys:
+            missing.append("LITELLM_API_KEYS (or LITELLM_API_KEY)")
+        if not webhook_urls:
+            missing.append("WEBHOOK_URLS (or WEBHOOK_URL)")
         if missing:
             raise ValueError(f"Missing environment variables: {', '.join(missing)}")
+        if len(base_urls) != len(api_keys):
+            raise ValueError("LITELLM_BASE_URLS and LITELLM_API_KEYS must contain the same number of items")
+        if names and len(names) != len(base_urls):
+            raise ValueError("LITELLM_GATEWAY_NAMES must contain one item per gateway")
+        gateway_names = names or tuple(f"网关 {index}" for index in range(1, len(base_urls) + 1))
+        gateways = tuple(
+            Gateway(f"gateway-{index}", name, base_url.rstrip("/"), api_key)
+            for index, (name, base_url, api_key) in enumerate(
+                zip(gateway_names, base_urls, api_keys), start=1
+            )
+        )
         return cls(
-            base_url=os.environ["LITELLM_BASE_URL"].rstrip("/"),
-            api_key=os.environ["LITELLM_API_KEY"],
-            webhook_url=os.environ["WEBHOOK_URL"],
+            base_url=gateways[0].base_url,
+            api_key=gateways[0].api_key,
+            webhook_url=webhook_urls[0],
             database_path=Path(os.getenv("SQLITE_PATH", "data/health.sqlite3")),
             check_interval=positive_number("CHECK_INTERVAL_SECONDS", "900"),
             health_timeout=positive_number("LITELLM_TIMEOUT_SECONDS", "120"),
             webhook_timeout=positive_number("WEBHOOK_TIMEOUT_SECONDS", "10"),
+            gateways=gateways,
+            webhook_urls=webhook_urls,
         )
 
 
@@ -146,12 +194,12 @@ def change_lines(previous: dict[str, Endpoint], current: dict[str, Endpoint]) ->
     return lines
 
 
-def message_chunks(lines: list[str], current: dict[str, Endpoint]) -> list[str]:
+def message_chunks(lines: list[str], current: dict[str, Endpoint], gateway_name: str) -> list[str]:
     if not lines:
         return []
     healthy = sum(endpoint.healthy for endpoint in current.values())
     footer = f"当前：正常 {healthy} / 异常 {len(current) - healthy}"
-    header = f"LiteLLM 模型健康变化 | {now_text()}"
+    header = f"LiteLLM {gateway_name} 模型健康变化 | {now_text()}"
     chunks: list[str] = []
     parts = [header]
     for line in [*lines, footer]:
@@ -166,28 +214,72 @@ def message_chunks(lines: list[str], current: dict[str, Endpoint]) -> list[str]:
 
 
 class StateStore:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, webhook_count: int = 1):
         path.parent.mkdir(parents=True, exist_ok=True)
         self.path = path
+        if webhook_count <= 0:
+            raise ValueError("webhook_count must be greater than zero")
+        self.webhook_count = webhook_count
         with self.connect() as db:
             db.execute("PRAGMA journal_mode=WAL")
-            db.executescript(
+            self._prepare_schema(db)
+
+    @staticmethod
+    def _prepare_schema(db: sqlite3.Connection) -> None:
+        db.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS metadata (
+                key TEXT PRIMARY KEY, value TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS outbox (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                content TEXT NOT NULL, created_at TEXT NOT NULL,
+                sent_at TEXT
+            );
+            CREATE TABLE IF NOT EXISTS outbox_delivery (
+                outbox_id INTEGER NOT NULL,
+                webhook_index INTEGER NOT NULL,
+                sent_at TEXT,
+                PRIMARY KEY (outbox_id, webhook_index),
+                FOREIGN KEY (outbox_id) REFERENCES outbox(id) ON DELETE CASCADE
+            );
+            """
+        )
+        columns = {row[1] for row in db.execute("PRAGMA table_info(endpoint_state)")}
+        if columns and "gateway_id" not in columns:
+            db.execute("ALTER TABLE endpoint_state RENAME TO endpoint_state_legacy")
+        db.execute(
+            """
+            CREATE TABLE IF NOT EXISTS endpoint_state (
+                gateway_id TEXT NOT NULL, model_id TEXT NOT NULL,
+                model TEXT NOT NULL, provider TEXT NOT NULL, credential TEXT NOT NULL,
+                healthy INTEGER NOT NULL, error_type TEXT NOT NULL,
+                http_status INTEGER,
+                PRIMARY KEY (gateway_id, model_id)
+            )
+            """
+        )
+        if columns and "gateway_id" not in columns:
+            db.execute(
                 """
-                CREATE TABLE IF NOT EXISTS endpoint_state (
-                    model_id TEXT PRIMARY KEY, model TEXT NOT NULL,
-                    provider TEXT NOT NULL, credential TEXT NOT NULL,
-                    healthy INTEGER NOT NULL, error_type TEXT NOT NULL,
-                    http_status INTEGER
-                );
-                CREATE TABLE IF NOT EXISTS metadata (
-                    key TEXT PRIMARY KEY, value TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS outbox (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    content TEXT NOT NULL, created_at TEXT NOT NULL,
-                    sent_at TEXT
-                );
+                INSERT INTO endpoint_state
+                    (gateway_id, model_id, model, provider, credential, healthy, error_type, http_status)
+                SELECT 'gateway-1', model_id, model, provider, credential, healthy, error_type, http_status
+                FROM endpoint_state_legacy
                 """
+            )
+            db.execute("DROP TABLE endpoint_state_legacy")
+            db.execute(
+                "INSERT OR IGNORE INTO metadata(key, value) "
+                "SELECT 'initialized:gateway-1', value FROM metadata WHERE key = 'initialized'"
+            )
+            db.execute(
+                "INSERT OR IGNORE INTO metadata(key, value) "
+                "SELECT 'source_failed:gateway-1', value FROM metadata WHERE key = 'source_failed'"
+            )
+            db.execute(
+                "INSERT OR IGNORE INTO metadata(key, value) "
+                "SELECT 'last_success_at:gateway-1', value FROM metadata WHERE key = 'last_success_at'"
             )
 
     @contextmanager
@@ -212,61 +304,113 @@ class StateStore:
             (key, value),
         )
 
-    @staticmethod
-    def queue(db: sqlite3.Connection, content: str) -> None:
-        db.execute(
+    def queue(self, db: sqlite3.Connection, content: str) -> None:
+        cursor = db.execute(
             "INSERT INTO outbox(content, created_at) VALUES (?, ?)",
             (content, now_text()),
         )
+        db.executemany(
+            "INSERT INTO outbox_delivery(outbox_id, webhook_index) VALUES (?, ?)",
+            [(cursor.lastrowid, index) for index in range(self.webhook_count)],
+        )
 
     @staticmethod
-    def load(db: sqlite3.Connection) -> dict[str, Endpoint]:
+    def load(db: sqlite3.Connection, gateway_id: str) -> dict[str, Endpoint]:
         rows = db.execute(
             "SELECT model_id, model, provider, credential, healthy, error_type, http_status "
-            "FROM endpoint_state"
+            "FROM endpoint_state WHERE gateway_id = ?",
+            (gateway_id,),
         ).fetchall()
         return {
             row[0]: Endpoint(row[0], row[1], row[2], row[3], bool(row[4]), row[5], row[6])
             for row in rows
         }
 
-    def record_success(self, current: dict[str, Endpoint]) -> list[str]:
+    def record_success(
+        self,
+        gateway_id: str | dict[str, Endpoint],
+        gateway_name: str = "",
+        current: dict[str, Endpoint] | None = None,
+    ) -> list[str]:
+        if isinstance(gateway_id, dict):
+            current = gateway_id
+            gateway_id = "gateway-1"
+            gateway_name = "网关 1"
+        if current is None:
+            raise TypeError("current gateway health result is required")
         with self.connect() as db:
-            previous = self.load(db)
-            initialized = self.get_meta(db, "initialized") == "1"
-            source_failed = self.get_meta(db, "source_failed") == "1"
+            previous = self.load(db, gateway_id)
+            initialized = self.get_meta(db, f"initialized:{gateway_id}") == "1"
+            source_failed = self.get_meta(db, f"source_failed:{gateway_id}") == "1"
             if initialized and previous and not current:
-                raise ValueError("empty health result would remove every deployment")
+                raise ValueError(f"empty health result would remove every deployment for {gateway_name}")
             lines = change_lines(previous, current) if initialized else []
             if source_failed:
-                lines.insert(0, "🟢 LiteLLM 健康检查接口已恢复")
-            db.execute("DELETE FROM endpoint_state")
+                lines.insert(0, f"🟢 LiteLLM {gateway_name} 健康检查接口已恢复")
+            db.execute("DELETE FROM endpoint_state WHERE gateway_id = ?", (gateway_id,))
             db.executemany(
-                "INSERT INTO endpoint_state VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO endpoint_state VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [
-                    (e.model_id, e.model, e.provider, e.credential,
+                    (gateway_id, e.model_id, e.model, e.provider, e.credential,
                      int(e.healthy), e.error_type, e.http_status)
                     for e in current.values()
                 ],
             )
-            self.set_meta(db, "initialized", "1")
-            self.set_meta(db, "source_failed", "0")
-            self.set_meta(db, "last_success_at", now_text())
-            for content in message_chunks(lines, current):
+            self.set_meta(db, f"initialized:{gateway_id}", "1")
+            self.set_meta(db, f"source_failed:{gateway_id}", "0")
+            self.set_meta(db, f"last_success_at:{gateway_id}", now_text())
+            for content in message_chunks(lines, current, gateway_name):
                 self.queue(db, content)
             return lines
 
-    def record_failure(self, reason: str) -> None:
+    def record_failure(
+        self, gateway_id: str, gateway_name: str | None = None, reason: str | None = None
+    ) -> None:
+        if reason is None:
+            reason = gateway_id
+            gateway_id = "gateway-1"
+            gateway_name = "网关 1"
+        assert gateway_name is not None
         with self.connect() as db:
-            if self.get_meta(db, "source_failed") != "1":
-                self.queue(db, f"🔴 LiteLLM 健康检查失败 | {now_text()}\n原因：{reason}")
-            self.set_meta(db, "source_failed", "1")
+            key = f"source_failed:{gateway_id}"
+            if self.get_meta(db, key) != "1":
+                self.queue(db, f"🔴 LiteLLM {gateway_name} 健康检查失败 | {now_text()}\n原因：{reason}")
+            self.set_meta(db, key, "1")
 
     def next_message(self) -> tuple[int, str] | None:
         with self.connect() as db:
-            return db.execute(
-                "SELECT id, content FROM outbox WHERE sent_at IS NULL ORDER BY id LIMIT 1"
+            rows = db.execute(
+                "SELECT id, content FROM outbox WHERE sent_at IS NULL ORDER BY id"
+            ).fetchall()
+            for message_id, content in rows:
+                db.executemany(
+                    "INSERT OR IGNORE INTO outbox_delivery(outbox_id, webhook_index) VALUES (?, ?)",
+                    [(message_id, index) for index in range(self.webhook_count)],
+                )
+                pending = db.execute(
+                    "SELECT 1 FROM outbox_delivery WHERE outbox_id = ? AND webhook_index < ? "
+                    "AND sent_at IS NULL LIMIT 1",
+                    (message_id, self.webhook_count),
+                ).fetchone()
+                if pending:
+                    return message_id, content
+                db.execute("UPDATE outbox SET sent_at = ? WHERE id = ?", (now_text(), message_id))
+            return None
+
+    def is_delivered(self, message_id: int, webhook_index: int) -> bool:
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT sent_at FROM outbox_delivery WHERE outbox_id = ? AND webhook_index = ?",
+                (message_id, webhook_index),
             ).fetchone()
+            return bool(row and row[0])
+
+    def mark_delivered(self, message_id: int, webhook_index: int) -> None:
+        with self.connect() as db:
+            db.execute(
+                "UPDATE outbox_delivery SET sent_at = ? WHERE outbox_id = ? AND webhook_index = ?",
+                (now_text(), message_id, webhook_index),
+            )
 
     def mark_sent(self, message_id: int) -> None:
         with self.connect() as db:
@@ -274,18 +418,36 @@ class StateStore:
 
     def summary(self) -> dict[str, Any]:
         with self.connect() as db:
-            rows = db.execute(
-                "SELECT healthy, COUNT(*) FROM endpoint_state GROUP BY healthy"
+            rows = db.execute("SELECT healthy, COUNT(*) FROM endpoint_state GROUP BY healthy").fetchall()
+            gateways = db.execute(
+                "SELECT gateway_id, SUM(healthy), SUM(NOT healthy) "
+                "FROM endpoint_state GROUP BY gateway_id ORDER BY gateway_id"
             ).fetchall()
             counts = {bool(healthy): count for healthy, count in rows}
             pending = db.execute("SELECT COUNT(*) FROM outbox WHERE sent_at IS NULL").fetchone()[0]
+            source_failed = db.execute(
+                "SELECT 1 FROM metadata WHERE "
+                "((key LIKE 'source_failed:%') OR key = 'source_failed') AND value = '1' LIMIT 1"
+            ).fetchone()
+            initialized = db.execute(
+                "SELECT 1 FROM metadata WHERE (key = 'initialized' AND value = '1') "
+                "OR (key LIKE 'initialized:%' AND value = '1') LIMIT 1"
+            ).fetchone()
+            last_success = db.execute(
+                "SELECT MAX(value) FROM metadata WHERE key = 'last_success_at' OR key LIKE 'last_success_at:%'"
+            ).fetchone()[0]
             return {
-                "initialized": self.get_meta(db, "initialized") == "1",
-                "source_failed": self.get_meta(db, "source_failed") == "1",
-                "last_success_at": self.get_meta(db, "last_success_at") or None,
+                "initialized": bool(initialized),
+                "source_failed": bool(source_failed),
+                "last_success_at": last_success or None,
                 "healthy_count": counts.get(True, 0),
                 "unhealthy_count": counts.get(False, 0),
                 "pending_notifications": pending,
+                "gateway_count": len(gateways),
+                "gateways": [
+                    {"gateway_id": gateway_id, "healthy_count": healthy or 0, "unhealthy_count": unhealthy or 0}
+                    for gateway_id, healthy, unhealthy in gateways
+                ],
             }
 
 
@@ -309,39 +471,59 @@ class HealthWatcher:
         self.stop = asyncio.Event()
 
     async def poll_once(self) -> None:
+        await asyncio.gather(*(self.poll_gateway(gateway) for gateway in self.settings.gateways))
+
+    async def poll_gateway(self, gateway: Gateway) -> None:
         try:
             response = await self.client.get(
-                f"{self.settings.base_url}/health",
-                headers={"Authorization": f"Bearer {self.settings.api_key}"},
+                f"{gateway.base_url}/health",
+                headers={"Authorization": f"Bearer {gateway.api_key}"},
                 timeout=self.settings.health_timeout,
             )
             response.raise_for_status()
             current = parse_health_response(response.json())
-            changes = self.store.record_success(current)
-            LOG.info("Health check complete: %d deployments, %d change lines", len(current), len(changes))
+            changes = self.store.record_success(gateway.gateway_id, gateway.name, current)
+            LOG.info(
+                "Health check complete for %s: %d deployments, %d change lines",
+                gateway.name,
+                len(current),
+                len(changes),
+            )
         except (httpx.HTTPError, ValueError, TypeError) as exc:
             reason = safe_failure(exc)
-            LOG.warning("Health check failed: %s", reason)
-            self.store.record_failure(reason)
+            LOG.warning("Health check failed for %s: %s", gateway.name, reason)
+            self.store.record_failure(gateway.gateway_id, gateway.name, reason)
 
     async def send_pending(self) -> None:
         while message := self.store.next_message():
             message_id, content = message
-            try:
-                response = await self.client.post(
-                    self.settings.webhook_url,
-                    json={"msgtype": "text", "text": {"content": content}},
-                    timeout=self.settings.webhook_timeout,
+            for webhook_index, webhook_url in enumerate(self.settings.webhook_urls):
+                if self.store.is_delivered(message_id, webhook_index):
+                    continue
+                try:
+                    response = await self.client.post(
+                        webhook_url,
+                        json={"msgtype": "text", "text": {"content": content}},
+                        timeout=self.settings.webhook_timeout,
+                    )
+                    response.raise_for_status()
+                    result = response.json()
+                    if not isinstance(result, dict) or result.get("errcode") != 0:
+                        raise ValueError("WeCom rejected the message")
+                except (httpx.HTTPError, ValueError) as exc:
+                    LOG.warning(
+                        "WeCom notification failed for webhook %d: %s",
+                        webhook_index + 1,
+                        type(exc).__name__,
+                    )
+                    return
+                self.store.mark_delivered(message_id, webhook_index)
+                LOG.info(
+                    "WeCom notification sent: outbox id %d, webhook %d",
+                    message_id,
+                    webhook_index + 1,
                 )
-                response.raise_for_status()
-                result = response.json()
-                if not isinstance(result, dict) or result.get("errcode") != 0:
-                    raise ValueError("WeCom rejected the message")
-            except (httpx.HTTPError, ValueError) as exc:
-                LOG.warning("WeCom notification failed: %s", type(exc).__name__)
-                return
             self.store.mark_sent(message_id)
-            LOG.info("WeCom notification sent: outbox id %d", message_id)
 
     async def check_loop(self) -> None:
         while not self.stop.is_set():
@@ -369,7 +551,7 @@ class HealthWatcher:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = Settings.from_env()
-    store = StateStore(settings.database_path)
+    store = StateStore(settings.database_path, len(settings.webhook_urls))
     watcher = HealthWatcher(settings, store)
     app.state.store = store
     tasks = [asyncio.create_task(watcher.check_loop()), asyncio.create_task(watcher.delivery_loop())]
