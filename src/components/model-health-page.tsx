@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 type Status = 'healthy' | 'degraded' | 'unhealthy'
 type DeploymentCheck = { id: string; model: string; deploymentId: string; status: 'healthy' | 'unhealthy'; checkedAt: string; responseMs: number; error?: string }
@@ -69,13 +70,20 @@ function DailyHistory({ checks, days }: { checks: DeploymentCheck[]; days: strin
     dateGroup.set(check.checkedAt, [...(dateGroup.get(check.checkedAt) ?? []), check])
     groups.set(date, dateGroup)
   }
-  const summaries = new Map<string, { availability: number; status: Status | null; checks: number }>()
+  const summaries = new Map<string, { availability: number; status: Status | null; checks: number; healthy: number; degraded: number; unhealthy: number }>()
   for (const date of days) {
     const slots = [...(groups.get(date)?.values() ?? [])]
     const statuses = slots.map(statusFromChecks).filter((value): value is Status => value !== null)
     const availability = statuses.length ? Math.round(statuses.filter((status) => status !== 'unhealthy').length / statuses.length * 100) : 0
     const status: Status | null = !statuses.length ? null : availability === 100 ? (statuses.includes('degraded') ? 'degraded' : 'healthy') : availability > 0 ? 'degraded' : 'unhealthy'
-    summaries.set(date, { availability, status, checks: statuses.length })
+    summaries.set(date, {
+      availability,
+      status,
+      checks: statuses.length,
+      healthy: statuses.filter((value) => value === 'healthy').length,
+      degraded: statuses.filter((value) => value === 'degraded').length,
+      unhealthy: statuses.filter((value) => value === 'unhealthy').length,
+    })
   }
   return (
     <div className="mt-3">
@@ -86,8 +94,22 @@ function DailyHistory({ checks, days }: { checks: DeploymentCheck[]; days: strin
         {days.map((day) => {
           const summary = summaries.get(day)!
           const color = !summary.status ? 'bg-muted' : summary.status === 'healthy' ? 'bg-emerald-500' : summary.status === 'unhealthy' ? 'bg-orange-500' : 'bg-[#d5a52a]'
-          const title = summary.checks ? `${day} · 可用率 ${summary.availability}% · ${summary.checks} 轮检查` : `${day} · 暂无检查记录`
-          return <span key={day} title={title} className={`min-w-0 flex-1 rounded-sm ${color} ${summary.status === 'degraded' && summary.availability > 0 ? 'opacity-70' : ''}`} />
+          return (
+            <Tooltip key={day}>
+              <TooltipTrigger asChild>
+                <span className={`min-w-0 flex-1 rounded-sm ${color} ${summary.status === 'degraded' && summary.availability > 0 ? 'opacity-70' : ''}`} />
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={8} className="flex flex-col items-start gap-1">
+                <span className="font-medium">{day}</span>
+                {summary.checks ? (
+                  <>
+                    <span>可用率 {summary.availability}% · {summary.checks} 轮检查</span>
+                    <span>正常 {summary.healthy} 轮 · 部分异常 {summary.degraded} 轮 · 不可用 {summary.unhealthy} 轮</span>
+                  </>
+                ) : <span>暂无检查记录</span>}
+              </TooltipContent>
+            </Tooltip>
+          )
         })}
       </div>
     </div>
@@ -103,7 +125,7 @@ export function ModelHealthPage() {
   const [watchAll, setWatchAll] = React.useState(true)
   const [webhookUrl, setWebhookUrl] = React.useState('')
   const [webhookConfigured, setWebhookConfigured] = React.useState(false)
-  const [period, setPeriod] = React.useState(30)
+  const [period, setPeriod] = React.useState(90)
   const [selectedModel, setSelectedModel] = React.useState('')
   const [settingsOpen, setSettingsOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(true)
