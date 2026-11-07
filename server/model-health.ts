@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import type { Express, Request, Response } from 'express'
 import express from 'express'
+import { getModelTagData, loadHealthSnapshot, saveHealthSnapshot } from './persistence.js'
 
 type CheckStatus = 'healthy' | 'degraded' | 'unhealthy'
 type DeploymentCheck = {
@@ -26,7 +27,7 @@ type HealthEvent = {
   notificationError?: string
 }
 type HealthConfig = { intervalMinutes: number; watchedModels: string[]; webhookUrl: string }
-type Store = { config: HealthConfig; checks: DeploymentCheck[]; events: HealthEvent[] }
+type Store = { config: HealthConfig; checks: DeploymentCheck[]; events: HealthEvent[]; statuses: Record<string, CheckStatus> }
 type Deployment = { model: string; id: string; litellmParams: Record<string, unknown>; modelInfo: Record<string, unknown>; mode?: string }
 type AnyRecord = Record<string, any>
 
@@ -51,6 +52,7 @@ const defaultStore: Store = {
   config: { intervalMinutes: validInterval(intervalDefault), watchedModels: [], webhookUrl: process.env.WEWORK_WEBHOOK_URL ?? '' },
   checks: [],
   events: [],
+  statuses: {},
 }
 let store: Store = structuredClone(defaultStore)
 let storeReady = false
@@ -72,6 +74,7 @@ function sanitizeError(value: unknown): string {
     .replace(/Bearer\s+[^\s"']+/gi, 'Bearer [redacted]')
     .replace(/sk-[A-Za-z0-9_-]{8,}/g, '[redacted-key]')
     .replace(/(api[_-]?key|token|secret)(\s*[=:]\s*)[^\s,;"']+/gi, '$1$2[redacted]')
+    .replace(/([?&]key=)[^&#\s"'<>]+/gi, '$1[redacted]')
     .slice(0, 400)
 }
 
@@ -85,6 +88,7 @@ function validWebhookUrl(value: string): boolean {
 }
 
 async function saveStore() {
+  if (await saveHealthSnapshot(store)) return
   await mkdir(dirname(dataFile), { recursive: true })
   const tempFile = `${dataFile}.${process.pid}.${randomUUID()}.tmp`
   await writeFile(tempFile, JSON.stringify(store), 'utf8')
@@ -93,8 +97,9 @@ async function saveStore() {
 
 async function ensureStore() {
   if (storeReady) return
+  const persisted = await loadHealthSnapshot()
   try {
-    const parsed = JSON.parse(await readFile(dataFile, 'utf8')) as Partial<Store>
+    const parsed = (persisted ?? JSON.parse(await readFile(dataFile, 'utf8'))) as Partial<Store>
     store = {
       config: {
         ...defaultStore.config,
@@ -105,11 +110,16 @@ async function ensureStore() {
       },
       checks: Array.isArray(parsed.checks) ? parsed.checks : [],
       events: Array.isArray(parsed.events) ? parsed.events : [],
+      statuses: parsed.statuses && typeof parsed.statuses === 'object'
+        ? Object.fromEntries(Object.entries(parsed.statuses).filter((entry): entry is [string, CheckStatus] => ['healthy', 'degraded', 'unhealthy'].includes(entry[1] as string)))
+        : latestStatuses(Array.isArray(parsed.checks) ? parsed.checks : []),
     }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') console.error('Unable to read model health store:', sanitizeError(error))
   }
   storeReady = true
+  // Import any existing file-based state into PostgreSQL on first startup.
+  if (persisted === null) await saveHealthSnapshot(store)
 }
 
 async function liteRequest(path: string, init: RequestInit = {}) {
@@ -144,7 +154,7 @@ function isIncluded(deployment: Deployment): boolean {
   return true
 }
 
-async function configuredDeployments(): Promise<Deployment[]> {
+export async function discoverDeployments(): Promise<Deployment[]> {
   const payload = await liteRequest('/model/info')
   const unique = new Map<string, Deployment>()
   for (const row of records(payload)) {
@@ -155,7 +165,11 @@ async function configuredDeployments(): Promise<Deployment[]> {
     if (!model) continue
     unique.set(id, { model, id, litellmParams: params, modelInfo: info, mode: typeof row.mode === 'string' ? row.mode : undefined })
   }
-  return [...unique.values()].filter(isIncluded)
+  return [...unique.values()]
+}
+
+async function configuredDeployments(): Promise<Deployment[]> {
+  return (await discoverDeployments()).filter(isIncluded)
 }
 
 async function checkDeployment(deployment: Deployment, checkedAt: string): Promise<DeploymentCheck> {
@@ -206,17 +220,21 @@ function summarize(checks: DeploymentCheck[]): Map<string, CheckStatus> {
   return result
 }
 
-function previousStatuses(): Map<string, CheckStatus> {
+function latestStatuses(checks: DeploymentCheck[]): Record<string, CheckStatus> {
   const latest = new Map<string, DeploymentCheck[]>()
   const timestamps = new Map<string, string>()
-  for (const check of store.checks) {
+  for (const check of checks) {
     const current = timestamps.get(check.model)
     if (!current || check.checkedAt > current) timestamps.set(check.model, check.checkedAt)
   }
-  for (const check of store.checks) {
+  for (const check of checks) {
     if (timestamps.get(check.model) === check.checkedAt) latest.set(check.model, [...(latest.get(check.model) ?? []), check])
   }
-  return summarize([...latest.values()].flat())
+  return Object.fromEntries(summarize([...latest.values()].flat()))
+}
+
+function previousStatuses(): Map<string, CheckStatus> {
+  return new Map(Object.entries(store.statuses))
 }
 
 async function sendWecom(event: HealthEvent) {
@@ -237,9 +255,19 @@ async function sendWecom(event: HealthEvent) {
       body: JSON.stringify({ msgtype: 'markdown', markdown: { content } }),
       signal: AbortSignal.timeout(10_000),
     })
-    const result = await response.json().catch(() => ({})) as AnyRecord
+    const raw = await response.text()
+    let result: AnyRecord = {}
+    try {
+      result = raw ? JSON.parse(raw) as AnyRecord : {}
+    } catch {
+      // Proxies and gateways often return an HTML or plain-text error page.
+    }
     if (!response.ok || (typeof result.errcode === 'number' && result.errcode !== 0)) {
-      throw new Error(`企业微信返回 ${response.status}${result.errmsg ? `：${result.errmsg}` : ''}`)
+      const bodyDetail = typeof result.errmsg === 'string'
+        ? result.errmsg
+        : raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300)
+      const statusText = response.statusText ? ` ${response.statusText}` : ''
+      throw new Error(sanitizeError(`企业微信返回 ${response.status}${statusText}${bodyDetail ? `：${bodyDetail}` : ''}`))
     }
     return { notified: true as const }
   } catch (error) {
@@ -260,25 +288,35 @@ async function runHealthCheck() {
     const after = summarize(currentChecks)
     store.checks.push(...currentChecks)
     store.checks = store.checks.filter((check) => Date.now() - Date.parse(check.checkedAt) < MAX_AGE_MS)
+    store.statuses = { ...store.statuses, ...Object.fromEntries(after) }
 
+    const newEvents: HealthEvent[] = []
     for (const [model, to] of after) {
       const from = before.get(model)
-      const previous = from ?? 'healthy'
-      if (from === to) continue
-      const isRecovery = from !== undefined && to === 'healthy' && from !== 'healthy'
-      const isAbnormal = to !== 'healthy' && (from === undefined || from === 'healthy' || (from === 'degraded' && to === 'unhealthy'))
+      if (from === undefined || from === to) continue
+      // Treat degraded and unhealthy as the same alert state. Notify only when
+      // a previously observed model crosses between healthy and abnormal.
+      const isRecovery = from !== 'healthy' && to === 'healthy'
+      const isAbnormal = from === 'healthy' && to !== 'healthy'
       if (!isRecovery && !isAbnormal) continue
       if (store.config.watchedModels.length && !store.config.watchedModels.includes(model)) continue
       const modelChecks = currentChecks.filter((check) => check.model === model && check.status === 'unhealthy')
       const event: HealthEvent = {
-        id: randomUUID(), model, from: previous, to, kind: isRecovery ? 'recovered' : 'abnormal', occurredAt: checkedAt,
+        id: randomUUID(), model, from, to, kind: isRecovery ? 'recovered' : 'abnormal', occurredAt: checkedAt,
         summary: isRecovery ? '所有部署均已恢复。' : modelChecks.map((check) => `${check.deploymentId}: ${check.error ?? '检查失败'}`).join('；').slice(0, 600),
         notified: false,
       }
+      newEvents.push(event)
+    }
+    store.events.push(...newEvents)
+    // Persist the new comparison baseline and events before sending so a
+    // restart can resume delivery without diffing the same transition again.
+    await saveStore()
+    for (const event of store.events.filter((candidate) => !candidate.notified)) {
       const notification = await sendWecom(event)
       event.notified = notification.notified
       if (notification.notificationError) event.notificationError = notification.notificationError
-      store.events.push(event)
+      else if (notification.notified) delete event.notificationError
     }
     lastRunAt = checkedAt
     lastRunError = null
@@ -355,7 +393,8 @@ export function registerModelHealth(app: Express) {
       return
     }
     store.config.intervalMinutes = validInterval(interval)
-    store.config.watchedModels = [...new Set((body.watchedModels ?? store.config.watchedModels).filter((model: string) => model.trim()))]
+    const watchedModels = Array.isArray(body.watchedModels) ? body.watchedModels as string[] : store.config.watchedModels
+    store.config.watchedModels = [...new Set(watchedModels.filter((model) => model.trim()))]
     if (body.clearWebhook === true) store.config.webhookUrl = ''
     else if (typeof body.webhookUrl === 'string' && body.webhookUrl.trim()) store.config.webhookUrl = body.webhookUrl.trim()
     await saveStore()
@@ -397,6 +436,8 @@ export function registerModelHealth(app: Express) {
     let activeModels: Set<string> | null = null
     try { activeModels = new Set((await configuredDeployments()).map((deployment) => deployment.model)) }
     catch { /* Keep the last known status visible while LiteLLM model discovery is unavailable. */ }
+    let tagData: { assignments: Record<string, string[]>; catalog: string[] } = { assignments: {}, catalog: [] }
+    try { tagData = await getModelTagData() } catch { /* Tags are optional when PostgreSQL is not configured. */ }
     const latestTimestamp = new Map<string, string>()
     for (const check of store.checks) {
       if (!latestTimestamp.has(check.model) || latestTimestamp.get(check.model)! < check.checkedAt) latestTimestamp.set(check.model, check.checkedAt)
@@ -408,10 +449,10 @@ export function registerModelHealth(app: Express) {
       const healthy = checks.filter((check) => check.status === 'healthy').length
       const status: CheckStatus = healthy === checks.length ? 'healthy' : healthy > 0 ? 'degraded' : 'unhealthy'
       const responseMs = checks.map((check) => check.responseMs)
-      return { model, status, healthyDeployments: healthy, deploymentCount: checks.length, responseMs: responseMs.length ? Math.round(responseMs.reduce((sum, value) => sum + value, 0) / responseMs.length) : null, checkedAt: checks[0]!.checkedAt, deployments: checks }
+      return { model, tags: tagData.assignments[model] ?? [], status, healthyDeployments: healthy, deploymentCount: checks.length, responseMs: responseMs.length ? Math.round(responseMs.reduce((sum, value) => sum + value, 0) / responseMs.length) : null, checkedAt: checks[0]!.checkedAt, deployments: checks }
     }).sort((a, b) => a.model.localeCompare(b.model))
     const counts = { healthy: models.filter((model) => model.status === 'healthy').length, degraded: models.filter((model) => model.status === 'degraded').length, unhealthy: models.filter((model) => model.status === 'unhealthy').length }
-    res.json({ models, counts, checkedAt: latest.reduce((date, check) => !date || date < check.checkedAt ? check.checkedAt : date, ''), running, lastRunError })
+    res.json({ models, tags: tagData.catalog, counts, checkedAt: latest.reduce((date, check) => !date || date < check.checkedAt ? check.checkedAt : date, ''), running, lastRunError })
   })
 
   router.post('/check', async (_req, res) => {

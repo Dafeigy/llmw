@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { RefreshCw } from "lucide-react"
 import type { UsageDay } from "@/lib/usage"
 import { ModelHealthPage } from "@/components/model-health-page"
+import { ModelManagementPage } from "@/components/model-management-page"
 
 type UsageResponse = { days: UsageDay[]; today: UsageDay; error?: string }
 
@@ -85,7 +86,7 @@ export default function App() {
               </div>
             </div>
           ) : (
-            activePage === "模型健康" ? <ModelHealthPage /> : <div className="flex flex-1" aria-label={`${activePage} Empty`} />
+            activePage === "模型健康" ? <ModelHealthPage /> : activePage === "模型管理" ? <ModelManagementPage /> : <div className="flex flex-1" aria-label={`${activePage} Empty`} />
           )}
         </SidebarInset>
       </SidebarProvider>

@@ -1,10 +1,11 @@
 import 'dotenv/config'
 import express from 'express'
 import { registerModelHealth } from './model-health.js'
+import { registerModelManagement } from './model-management.js'
+import { closePersistence, getCachedJson, initializePersistence, setCachedJson } from './persistence.js'
 
 const app = express()
 app.use(express.json({ limit: '256kb' }))
-registerModelHealth(app)
 const port = Number(process.env.PORT ?? 3001)
 const base = (process.env.LITELLM_API_BASE ?? '').replace(/\/+$/, '')
 const apiKey = process.env.LITELLM_API_KEY ?? ''
@@ -53,6 +54,9 @@ app.get('/api/usage', async (_req, res) => {
     return
   }
 
+  const cached = await getCachedJson<{ days: UsageDay[]; today: UsageDay; updatedAt: string; source: string; requestSource: string }>('usage:latest')
+  if (cached) { res.json(cached); return }
+
   const formatDate = (date: Date) => `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`
   const endDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
   const end = new Date(`${endDate}T00:00:00.000Z`)
@@ -86,7 +90,9 @@ app.get('/api/usage', async (_req, res) => {
 
     const result = [...days.values()]
     const current = result.at(-1)!
-    res.json({ days: result, today: current, updatedAt: new Date().toISOString(), source: 'litellm', requestSource: 'daily_activity_aggregated' })
+    const response = { days: result, today: current, updatedAt: new Date().toISOString(), source: 'litellm', requestSource: 'daily_activity_aggregated' }
+    await setCachedJson('usage:latest', response, 60)
+    res.json(response)
   } catch (error) {
     res.status(502).json({ error: error instanceof Error ? error.message : 'LiteLLM 请求失败' })
   }
@@ -116,6 +122,9 @@ app.get('/api/usage/trend', async (req, res) => {
   }
 
   const selectedModel = typeof req.query.model === 'string' ? req.query.model : ''
+  const cacheKey = `usage:trend:${startDate}:${endDate}:${selectedModel}`
+  const cached = await getCachedJson<{ days: UsageDay[]; options: { model: string[] }; startDate: string; endDate: string }>(cacheKey)
+  if (cached) { res.json(cached); return }
   const days = new Map<string, UsageDay>()
   for (let cursor = new Date(`${startDate}T00:00:00.000Z`); cursor <= new Date(`${endDate}T00:00:00.000Z`); cursor.setUTCDate(cursor.getUTCDate() + 1)) {
     const date = `${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, '0')}-${String(cursor.getUTCDate()).padStart(2, '0')}`
@@ -155,12 +164,14 @@ app.get('/api/usage/trend', async (req, res) => {
       day.spend += metric(source, ['spend', 'total_spend', 'total_cost'])
     }
 
-    res.json({
+    const response = {
       days: [...days.values()],
       options: { model: [...models].sort((a, b) => a.localeCompare(b)) },
       startDate,
       endDate,
-    })
+    }
+    await setCachedJson(cacheKey, response, 300)
+    res.json(response)
   } catch (error) {
     // LiteLLM's aggregate endpoint can raise this when the selected range has
     // no activity at all. Treat that specific empty-aggregate failure as a
@@ -180,8 +191,24 @@ app.get('/api/usage/trend', async (req, res) => {
 })
 
 app.use(express.static('dist'))
-app.get('/{*path}', (_req, res, next) => {
-  res.sendFile('index.html', { root: 'dist' }, (error) => { if (error) next() })
-})
 
-app.listen(port, () => console.log(`LiteLLM dashboard server listening on http://localhost:${port}`))
+async function start() {
+  await initializePersistence()
+  registerModelHealth(app)
+  registerModelManagement(app)
+  // Register the SPA fallback after API routes. Registering it before the
+  // asynchronously initialized model-health router makes API requests return
+  // index.html, which the client then fails to parse as JSON.
+  app.get('/{*path}', (_req, res, next) => {
+    res.sendFile('index.html', { root: 'dist' }, (error) => { if (error) next() })
+  })
+  const server = app.listen(port, () => console.log(`LiteLLM dashboard server listening on http://localhost:${port}`))
+  const shutdown = () => server.close(() => { void closePersistence().finally(() => process.exit(0)) })
+  process.once('SIGINT', shutdown)
+  process.once('SIGTERM', shutdown)
+}
+
+void start().catch((error) => {
+  console.error('Unable to start server:', error)
+  process.exitCode = 1
+})

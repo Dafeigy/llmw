@@ -1,0 +1,68 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      LITELLM_API_BASE: ${LITELLM_API_BASE:-http://host.docker.internal:4000}
+      LITELLM_API_KEY: ${LITELLM_API_KEY:-}
+      DATABASE_URL: postgres://dashboard:${POSTGRES_PASSWORD:-dashboard-change-me}@postgres:5432/dashboard
+      REDIS_URL: redis://redis:6379
+      MODEL_HEALTH_INTERVAL_MINUTES: ${MODEL_HEALTH_INTERVAL_MINUTES:-15}
+      MODEL_HEALTH_INCLUDE_MODELS: ${MODEL_HEALTH_INCLUDE_MODELS:-}
+      MODEL_HEALTH_EXCLUDE_MODELS: ${MODEL_HEALTH_EXCLUDE_MODELS:-}
+      MODEL_HEALTH_TIMEOUT_MS: ${MODEL_HEALTH_TIMEOUT_MS:-30000}
+      MODEL_HEALTH_CONCURRENCY: ${MODEL_HEALTH_CONCURRENCY:-4}
+      WEWORK_WEBHOOK_URL: ${WEWORK_WEBHOOK_URL:-}
+    ports:
+      - "${DEV_PORT:-5173}:5173"
+      - "${API_PORT:-3001}:3001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/app
+      - dev_node_modules:/app/node_modules
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dashboard
+      POSTGRES_USER: dashboard
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dashboard-change-me}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dashboard -d dashboard"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - dev_postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - dev_redis_data:/data
+
+volumes:
+  dev_node_modules:
+  dev_postgres_data:
+  dev_redis_data:

@@ -12,7 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 type Status = 'healthy' | 'degraded' | 'unhealthy'
 type DeploymentCheck = { id: string; model: string; deploymentId: string; status: 'healthy' | 'unhealthy'; checkedAt: string; responseMs: number; error?: string }
-type ModelStatus = { model: string; status: Status; healthyDeployments: number; deploymentCount: number; responseMs: number | null; checkedAt: string; deployments: DeploymentCheck[] }
+type ModelStatus = { model: string; tags: string[]; status: Status; healthyDeployments: number; deploymentCount: number; responseMs: number | null; checkedAt: string; deployments: DeploymentCheck[] }
 type HealthConfig = {
   intervalMinutes: number; watchedModels: string[]; watchAllModels: boolean; webhookConfigured: boolean;
   includePatterns: string[]; excludePatterns: string[]; models: string[]; modelsError?: string;
@@ -127,6 +127,8 @@ export function ModelHealthPage() {
   const [webhookConfigured, setWebhookConfigured] = React.useState(false)
   const [period, setPeriod] = React.useState(90)
   const [selectedModel, setSelectedModel] = React.useState('')
+  const [selectedTag, setSelectedTag] = React.useState('')
+  const [availableTags, setAvailableTags] = React.useState<string[]>([])
   const [settingsOpen, setSettingsOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(true)
   const [checking, setChecking] = React.useState(false)
@@ -135,6 +137,10 @@ export function ModelHealthPage() {
   const [error, setError] = React.useState('')
   const [notice, setNotice] = React.useState('')
   const settingsInitialized = React.useRef(false)
+
+  React.useEffect(() => {
+    setSelectedModel('')
+  }, [])
 
   const refresh = React.useCallback(async (showLoading = false) => {
     if (showLoading) setLoading(true)
@@ -149,6 +155,7 @@ export function ModelHealthPage() {
       if (!configResponse.ok) throw new Error(configData.error ?? '无法读取监控配置')
       if (!historyResponse.ok) throw new Error(historyData.error ?? '无法读取历史记录')
       setStatus(statusData.models ?? [])
+      setAvailableTags(statusData.tags ?? [])
       setConfig(configData)
       if (!settingsInitialized.current) {
         setIntervalMinutes(configData.intervalMinutes)
@@ -159,7 +166,6 @@ export function ModelHealthPage() {
       setWebhookConfigured(configData.webhookConfigured)
       setHistory(historyData)
       setError(configData.modelsError ?? statusData.lastRunError ?? '')
-      setSelectedModel((current) => current || statusData.models?.[0]?.model || '')
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : '读取模型健康状态失败')
     } finally {
@@ -250,15 +256,16 @@ export function ModelHealthPage() {
     setWatchedModels((current) => checked ? [...new Set([...current, model])] : current.filter((item) => item !== model))
   }
   const days = React.useMemo(() => lastDays(period), [period])
+  const filteredStatus = selectedTag ? status.filter((model) => model.tags?.includes(selectedTag)) : status
   const counts = {
-    healthy: status.filter((model) => model.status === 'healthy').length,
-    degraded: status.filter((model) => model.status === 'degraded').length,
-    unhealthy: status.filter((model) => model.status === 'unhealthy').length,
+    healthy: filteredStatus.filter((model) => model.status === 'healthy').length,
+    degraded: filteredStatus.filter((model) => model.status === 'degraded').length,
+    unhealthy: filteredStatus.filter((model) => model.status === 'unhealthy').length,
   }
   const selected = status.find((model) => model.model === selectedModel)
   const selectedChecks = history.checks.filter((check) => check.model === selectedModel).sort((a, b) => b.checkedAt.localeCompare(a.checkedAt))
   const selectedEvents = history.events.filter((event) => event.model === selectedModel).sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
-  const orderedModels = [...status].sort((a, b) => ({ unhealthy: 0, degraded: 1, healthy: 2 }[a.status] - { unhealthy: 0, degraded: 1, healthy: 2 }[b.status]) || a.model.localeCompare(b.model))
+  const orderedModels = [...filteredStatus].sort((a, b) => ({ unhealthy: 0, degraded: 1, healthy: 2 }[a.status] - { unhealthy: 0, degraded: 1, healthy: 2 }[b.status]) || a.model.localeCompare(b.model))
   const lastCheckedAt = status.reduce<string | null>((latest, model) => !latest || latest < model.checkedAt ? model.checkedAt : latest, null)
 
   return (
@@ -345,7 +352,7 @@ export function ModelHealthPage() {
       )}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <SummaryCard label="监控模型" value={status.length} icon={<Activity className="size-4" />} detail={`${config?.excludePatterns.length ? '已按环境变量过滤' : '当前纳入检查范围'}`} />
+        <SummaryCard label="监控模型" value={filteredStatus.length} icon={<Activity className="size-4" />} detail={selectedTag ? `Tag：${selectedTag}` : `${config?.excludePatterns.length ? '已按环境变量过滤' : '当前纳入检查范围'}`} />
         <SummaryCard label="可用" value={counts.healthy} icon={<CheckCircle2 className="size-4 text-emerald-600" />} detail="所有部署正常" />
         <SummaryCard label="部分异常" value={counts.degraded} icon={<CircleAlert className="size-4 text-[#a78318]" />} detail="至少一个部署正常" />
         <SummaryCard label="不可用" value={counts.unhealthy} icon={<CircleX className="size-4 text-orange-600" />} detail="所有部署均检查失败" />
@@ -357,8 +364,16 @@ export function ModelHealthPage() {
             <CardTitle>服务状态</CardTitle>
             <CardDescription className="mt-1">最近检查：{formatTime(lastCheckedAt)}（Asia/Shanghai）</CardDescription>
           </div>
-          <div className="flex items-center gap-1 rounded-lg border p-1" aria-label="历史范围">
-            {[7, 30, 90].map((value) => <Button key={value} size="sm" variant={period === value ? 'secondary' : 'ghost'} className="h-8 px-3" onClick={() => setPeriod(value)}>{value} 天</Button>)}
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground">Tag 筛选
+              <select className="h-9 rounded-md border bg-background px-3 text-sm text-foreground" aria-label="按 tag 筛选模型" value={selectedTag} onChange={(event) => setSelectedTag(event.target.value)}>
+                <option value="">全部模型</option>
+                {availableTags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
+              </select>
+            </label>
+            <div className="flex items-center gap-1 rounded-lg border p-1" aria-label="历史范围">
+              {[7, 30, 90].map((value) => <Button key={value} size="sm" variant={period === value ? 'secondary' : 'ghost'} className="h-8 px-3" onClick={() => setPeriod(value)}>{value} 天</Button>)}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -383,6 +398,7 @@ export function ModelHealthPage() {
                           <span className={`size-2.5 shrink-0 rounded-full ${statusDots[model.status]}`} />
                           <span className="truncate font-medium" title={model.model}>{model.model}</span>
                           <Badge variant="outline" className={statusStyles[model.status]}>{statusLabels[model.status]}</Badge>
+                          {model.tags?.map((tag) => <Badge key={tag} variant="secondary" className="hidden sm:inline-flex">{tag}</Badge>)}
                           <span className="hidden text-xs text-muted-foreground sm:inline">{model.healthyDeployments}/{model.deploymentCount} 部署可用</span>
                         </div>
                         <div className="flex items-center gap-4 pl-5 text-sm text-muted-foreground sm:pl-0">

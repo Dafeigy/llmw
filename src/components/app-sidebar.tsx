@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, FolderIcon, DatabaseIcon, FileChartColumnIcon, CommandIcon } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, TagsIcon, DatabaseIcon, FileChartColumnIcon, CommandIcon } from "lucide-react"
 
 const data = {
   user: {
@@ -38,10 +38,10 @@ const data = {
       ),
     },
     {
-      title: "团队与用户",
+      title: "模型管理",
       url: "#",
       icon: (
-        <FolderIcon
+        <TagsIcon
         />
       ),
     },
